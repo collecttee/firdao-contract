@@ -34,6 +34,7 @@ contract Users is IUsers{
    function register(string memory username,string memory email,string memory information) payable external checkUsername(username) {
       string memory trueUsername = username;
       username = _toLower(username);
+      require(_existsLetter(username) == true ,'Please enter at least one letter');
       require(usernameExists[username] == false,'already this user');
       require(userInfo[msg.sender].joinTime == 0,'already this user');
       require(bytes(username).length >=minUsernameLength && bytes(username).length < maxUsernameLength ,'Username length error');
@@ -61,6 +62,7 @@ contract Users is IUsers{
 
    function setFee(uint fees) public {
       require(msg.sender == owner ,'no access');
+      require(fees <= 100000000000000000,'The maximum fee is 0.1ETH');
       fee = fees;
    }
    function _toLower(string memory str) internal pure returns (string memory) {
@@ -99,5 +101,14 @@ contract Users is IUsers{
       owner = account;
    }
 
+   function _existsLetter(string memory username) internal pure  returns(bool)  {
+       bytes memory bStr = bytes(username);
+        for (uint i = 0; i < bStr.length; i++) {
+            if ((uint8(bStr[i]) >= 97) && (uint8(bStr[i]) <= 122)) {
+               return true;
+            }
+        }
+        return false;
+   }
      receive() external payable {}
 }

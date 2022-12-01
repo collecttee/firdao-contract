@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IUsers.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract Users is IUsers{
+contract Users is IUsers,ERC721URIStorage {
    mapping(address => User) public userInfo;
    mapping(string => bool) public override usernameExists;
    User[] public users;
@@ -15,13 +16,14 @@ contract Users is IUsers{
    uint public maxUsernameLength = 30;
    address public admin = 0x161E76814E44072798E658B5F3cd25f1f000Ab61;
    address payable  public feeReceiver;
-   constructor(address payable _feeReceiver)  {
+   constructor(address payable _feeReceiver) ERC721("Fire Passport", "Fire Passport") {
       owner = msg.sender;
       feeReceiver = _feeReceiver;
       User memory user = User({id:1,account:admin,username:"admin",information:"",joinTime:block.timestamp});
       users.push(user);
       userInfo[admin] = user;
       usernameExists["admin"] = true;
+      _mint(admin, 1);
    }
 
    modifier checkUsername(string memory username) {
@@ -31,7 +33,7 @@ contract Users is IUsers{
         }
        _;
    }
-   function register(string memory username,string memory email,string memory information) payable external checkUsername(username) {
+   function register(string memory username,string memory email,string memory information,string memory tokenURI) payable external checkUsername(username) {
       string memory trueUsername = username;
       username = _toLower(username);
       require(_existsLetter(username) == true ,'Please enter at least one letter');
@@ -47,6 +49,8 @@ contract Users is IUsers{
       users.push(user);
       userInfo[msg.sender] = user;
       usernameExists[username] = true;
+      _mint(msg.sender, id);
+      _setTokenURI(id, tokenURI);
       emit Register(id,trueUsername,msg.sender,email,block.timestamp);
    }
 
@@ -93,13 +97,24 @@ contract Users is IUsers{
 
    function changeFeeReceiver(address payable receiver) external {
       require(msg.sender == owner ,'no access');
-      feeReceiver = receiver;   
+      feeReceiver = receiver;
    }
 
    function changeOwner(address account) public {
       require(msg.sender == owner ,'no access');
       owner = account;
    }
+
+   function _transfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override  {
+       from;
+       to;
+       tokenId;
+       revert("ERC721:No transfer allowed");
+    }
 
    function _existsLetter(string memory username) internal pure  returns(bool)  {
        bytes memory bStr = bytes(username);

@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "./interface/IUsers.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./interface/IWETH.sol";
+import "./interface/IMinistryOfFinance.sol";
 import './libraries/TransferHelper.sol';
 
 contract FirePassport is IUsers,ERC721URIStorage {
@@ -19,9 +20,11 @@ contract FirePassport is IUsers,ERC721URIStorage {
    address public admin = 0x161E76814E44072798E658B5F3cd25f1f000Ab61;
     address public weth;
    address public feeReceiver;
-   constructor(address  _feeReceiver,address _weth) ERC721("Fire Passport", "Fire Passport") {
+    address public ministryOfFinance;
+   constructor(address  _feeReceiver,address _weth,address _ministryOfFinance) ERC721("Fire Passport", "Fire Passport") {
       owner = msg.sender;
       feeReceiver = _feeReceiver;
+       ministryOfFinance = _ministryOfFinance;
       weth = _weth;
       User memory user = User({PID:1,account:admin,username:"admin",information:"",joinTime:block.timestamp});
       users.push(user);
@@ -60,6 +63,7 @@ contract FirePassport is IUsers,ERC721URIStorage {
       usernameExists[username] = true;
       _mint(msg.sender, id);
       _setTokenURI(id, tokenURI);
+       IMinistryOfFinance(ministryOfFinance).setSourceOfIncome(0,fee);
       emit Register(id,trueUsername,msg.sender,email,block.timestamp);
    }
 
@@ -106,6 +110,11 @@ contract FirePassport is IUsers,ERC721URIStorage {
       require(msg.sender == owner ,'no access');
       feeReceiver = receiver;
    }
+
+    function changeMinistryOfFinance(address _ministryOfFinance) external {
+        require(msg.sender == owner ,'no access');
+        ministryOfFinance = _ministryOfFinance;
+    }
 
    function changeOwner(address account) public {
       require(msg.sender == owner ,'no access');

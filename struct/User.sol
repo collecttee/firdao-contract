@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
     struct User{
-        uint id;
+        uint PID;
         address account;
         string username;
         string information;

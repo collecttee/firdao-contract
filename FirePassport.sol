@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interface/IUsers.sol";
+import "./interface/IFirePassport.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./interface/IWETH.sol";
 import "./interface/IMinistryOfFinance.sol";
 import './libraries/TransferHelper.sol';
 
-contract FirePassport is IUsers,ERC721URIStorage {
+contract FirePassport is IFirePassport,ERC721URIStorage {
    mapping(address => User) public userInfo;
    mapping(string => bool) public override usernameExists;
    User[] public users;
@@ -76,7 +76,9 @@ contract FirePassport is IUsers,ERC721URIStorage {
    function getUserCount() external view override returns(uint) {
       return users.length;
    }
-
+    function hasPID(address user) external view returns(bool);{
+        return userInfo[user].PID !=0;
+    }
    function setFee(uint fees) public {
       require(msg.sender == owner ,'no access');
       require(fees <= 100000000000000000,'The maximum fee is 0.1ETH');

@@ -63,7 +63,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       usernameExists[username] = true;
       _mint(msg.sender, id);
       _setTokenURI(id, tokenURI);
-    //    IMinistryOfFinance(ministryOfFinance).setSourceOfIncome(0,fee);
+      IMinistryOfFinance(ministryOfFinance).setSourceOfIncome(0,fee);
       emit Register(id,trueUsername,msg.sender,email,block.timestamp);
    }
 

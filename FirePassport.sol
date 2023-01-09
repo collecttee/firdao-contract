@@ -23,7 +23,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
     address public weth;
    address public feeReceiver;
     address public ministryOfFinance;
-   constructor(address  _feeReceiver,address _weth,address _ministryOfFinance) ERC721("Fire Passport", "Fire Passport") {
+   constructor(address  _feeReceiver,address _weth,address _ministryOfFinance,string memory baseURI_) ERC721("Fire Passport", "Fire Passport") {
       owner = msg.sender;
       feeReceiver = _feeReceiver;
        ministryOfFinance = _ministryOfFinance;
@@ -32,6 +32,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       users.push(user);
       userInfo[admin] = user;
       usernameExists["firekun"] = true;
+      baseURI = baseURI_;
       _mint(admin, 1);
    }
  

@@ -5,7 +5,7 @@ import "./interface/IFirePassport.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./interface/IWETH.sol";
 import "./interface/IMinistryOfFinance.sol";
-import "./lib/TransferHelper.sol";
+import "./libraries/TransferHelper.sol";
 
 contract FirePassport is IFirePassport,ERC721URIStorage {
    mapping(address => User) public userInfo;
@@ -100,7 +100,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
    function getUserCount() external view override returns(uint) {
       return users.length;
    }
-    function hasPID(address user) external view returns(bool){
+    function hasPID(address user) external override view returns(bool){
         return userInfo[user].PID !=0;
     }
    function setFee(uint fees) public {
@@ -160,10 +160,8 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
 
    function _existsLetter(string memory username) internal pure  returns(bool)  {
        bytes memory bStr = bytes(username);
-        for (uint i = 0; i < bStr.length; i++) {
-            if ((uint8(bStr[i]) >= 97) && (uint8(bStr[i]) <= 122)) {
-               return true;
-            }
+        if ((uint8(bStr[0]) >= 97) && (uint8(bStr[0]) <= 122)) {
+           return true;
         }
         return false;
    }

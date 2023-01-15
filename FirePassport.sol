@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "./interface/IFirePassport.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./interface/IWETH.sol";
-import "./interface/IMinistryOfFinance.sol";
+import "./interface/ITreasuryDistributionContract.sol";
 import "./libraries/TransferHelper.sol";
 
 contract FirePassport is IFirePassport,ERC721URIStorage {
@@ -20,13 +20,13 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
    uint public minUsernameLength = 4;
    uint public maxUsernameLength = 30;
    address public admin = 0x161E76814E44072798E658B5F3cd25f1f000Ab61;
-    address public weth;
+   address public weth;
    address public feeReceiver;
-    address public ministryOfFinance;
-   constructor(address  _feeReceiver,address _weth,address _ministryOfFinance,string memory baseURI_) ERC721("Fire Passport", "Fire Passport") {
+   address public treasuryDistributionContract;
+   bool public useTreasuryDistributionContract;
+   constructor(address  _feeReceiver,address _weth,string memory baseURI_) ERC721("Fire Passport", "Fire Passport") {
       owner = msg.sender;
       feeReceiver = _feeReceiver;
-       ministryOfFinance = _ministryOfFinance;
       weth = _weth;
       User memory user = User({PID:1,account:admin,username:"FireKun",information:"",joinTime:block.timestamp});
       users.push(user);
@@ -65,7 +65,9 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       userInfo[msg.sender] = user;
       usernameExists[username] = true;
       _mint(msg.sender, id);
-      IMinistryOfFinance(ministryOfFinance).setSourceOfIncome(0,fee);
+      if(useTreasuryDistributionContract) {
+         ITreasuryDistributionContract(treasuryDistributionContract).setSourceOfIncome(1,1,fee);
+      }
       emit Register(id,trueUsername,msg.sender,email,block.timestamp);
    }
    function setBaseURI(string memory baseURI_) external {
@@ -124,7 +126,12 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
 
    function setFeeOn(bool set) public {
      require(msg.sender == owner ,'no access');
-      feeOn = set;
+     feeOn = set;
+   }
+
+   function setTreasuryDistributionContractOn(bool set) external {
+      require(msg.sender == owner ,'no access');
+      useTreasuryDistributionContract = set;
    }
 
    function setUsernameLimitLength(uint min,uint max) public {
@@ -138,10 +145,10 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       feeReceiver = receiver;
    }
 
-    function changeMinistryOfFinance(address _ministryOfFinance) external {
-        require(msg.sender == owner ,'no access');
-        ministryOfFinance = _ministryOfFinance;
-    }
+   function setTreasuryDistributionContract(address _treasuryDistributionContract) external {
+      require(msg.sender == owner ,'no access');
+      treasuryDistributionContract = _treasuryDistributionContract;
+   }
 
    function changeOwner(address account) public {
       require(msg.sender == owner ,'no access');

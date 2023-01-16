@@ -14,7 +14,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
    string public baseExtension = ".json";
    User[] public users;
    address public owner;
-   event Register(uint  id,string  username, address  account,string email,uint joinTime);
+   event Register(uint  pid,string  username, address  account,string email,uint joinTime);
    bool public feeOn;
    uint public fee;
    uint public minUsernameLength = 4;

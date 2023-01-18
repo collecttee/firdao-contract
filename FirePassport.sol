@@ -41,7 +41,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
          for (uint i = 0; i < bStr.length; i++) {
             require(((uint8(bStr[i]) >= 65) && (uint8(bStr[i]) <= 90)) || ((uint8(bStr[i]) >= 48) && (uint8(bStr[i]) <= 57)) || ((uint8(bStr[i]) >= 97) && (uint8(bStr[i]) <= 122)) ||(uint8(bStr[i]) == 95),"The username contains illegal characters");
          }
-      require((uint8(bStr[0]) >= 97) && (uint8(bStr[0]) <= 122),"Username begins with a letter"); 
+      require(((uint8(bStr[0]) >= 97) && (uint8(bStr[0]) <= 122)) || ((uint8(bStr[0]) >= 65) && (uint8(bStr[0]) <= 90)),"Username begins with a letter"); 
       _;
    }
    modifier isOwner() {

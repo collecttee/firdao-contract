@@ -14,7 +14,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
    string public baseExtension = ".json";
    User[] public users;
    address public owner;
-   event Register(uint  pid,string  username, address  account,string email,uint joinTime);
+   event Register(uint  pid,string  username, address  account,string email,uint joinTime,string information);
    bool public feeOn;
    uint public fee;
    uint public minUsernameLength = 4;
@@ -38,10 +38,12 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
  
    modifier checkUsername(string memory username) {
       bytes memory bStr = bytes(username);
+      require(bStr.length >=minUsernameLength && bStr.length < maxUsernameLength ,"Username length exceeds limit");
+      require(((uint8(bStr[0]) >= 97) && (uint8(bStr[0]) <= 122)) || ((uint8(bStr[0]) >= 65) && (uint8(bStr[0]) <= 90)),"Username begins with a letter"); 
          for (uint i = 0; i < bStr.length; i++) {
             require(((uint8(bStr[i]) >= 65) && (uint8(bStr[i]) <= 90)) || ((uint8(bStr[i]) >= 48) && (uint8(bStr[i]) <= 57)) || ((uint8(bStr[i]) >= 97) && (uint8(bStr[i]) <= 122)) ||(uint8(bStr[i]) == 95),"The username contains illegal characters");
          }
-      require(((uint8(bStr[0]) >= 97) && (uint8(bStr[0]) <= 122)) || ((uint8(bStr[0]) >= 65) && (uint8(bStr[0]) <= 90)),"Username begins with a letter"); 
+    
       _;
    }
    modifier isOwner() {
@@ -53,7 +55,6 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       username = _toLower(username);
       require(usernameExists[username] == false,"This username has already been taken");
       require(userInfo[msg.sender].joinTime == 0,"This username has already been taken");
-      require(bytes(username).length >=minUsernameLength && bytes(username).length < maxUsernameLength ,"Username length exceeds limit");
       if(feeOn){
           if(msg.value == 0) {
               TransferHelper.safeTransferFrom(weth,msg.sender,feeReceiver,fee);
@@ -72,7 +73,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
       if(useTreasuryDistributionContract) {
          ITreasuryDistributionContract(treasuryDistributionContract).setSourceOfIncome(1,1,fee);
       }
-      emit Register(id,trueUsername,msg.sender,email,block.timestamp);
+      emit Register(id,trueUsername,msg.sender,email,block.timestamp,information);
    }
    function setBaseURI(string memory baseURI_) isOwner external {
       baseURI = baseURI_;

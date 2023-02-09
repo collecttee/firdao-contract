@@ -115,6 +115,9 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
     function hasPID(address user) external override view returns(bool){
         return userInfo[user].PID !=0;
     }
+    function getUserInfo(address user) external override view returns(User memory){
+        return userInfo[user];
+    }
    function setFee(uint fees) isOwner public {
       require(fees <= 100000000000000000,'The maximum fee is 0.1ETH');
       fee = fees;

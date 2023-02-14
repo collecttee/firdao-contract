@@ -26,7 +26,7 @@ contract SeedDonation {
         bool hasPID = firePassport.hasPID(msg.sender);
         require(hasPID || hasFID , 'donate:No permission');
         if(_amount == 0) {
-            require(_checkDonateAmount(msg.value),'donate:The quantity does not meet the requirements');
+            require(_checkDonateAmount(msg.value) == true,'donate:The quantity does not meet the requirements');
             if(hasFID){
                 require(msg.value <= 1 ether,'donate:The quantity does not meet the requirements');
             }else if(hasPID){
@@ -36,7 +36,7 @@ contract SeedDonation {
             }
             TransferHelper.safeTransferFrom(weth,msg.sender,feeReceiver,_amount);
         }else{
-            require(_checkDonateAmount(_amount),'donate:The quantity does not meet the requirements');
+            require(_checkDonateAmount(_amount) == true,'donate:The quantity does not meet the requirements');
             if(hasFID){
                 require(_amount <= 1 ether,'donate:The quantity does not meet the requirements');
             }else if(hasPID){
@@ -50,7 +50,7 @@ contract SeedDonation {
 
 
     }
-    function _checkDonateAmount(uint _amount) internal{
+    function _checkDonateAmount(uint _amount) internal view returns(bool) {
         uint minAmount = 0.1 ether;
         for(uint i =1;i<=10;i++){
             if(minAmount.mul(i) == _amount){

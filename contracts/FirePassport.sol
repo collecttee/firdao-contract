@@ -19,7 +19,7 @@ contract FirePassport is IFirePassport,ERC721URIStorage {
    uint public fee;
    uint public minUsernameLength = 4;
    uint public maxUsernameLength = 30;
-   address public firekun = 0x59af07FC784261c6c17790aB8FcEB15d52C8fBF0;
+   address public firekun = 0x9EABe6013C52e23c4564900465e87093a36A1d4b;
    address public weth;
    address public feeReceiver;
    address public treasuryDistributionContract;
